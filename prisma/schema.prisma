@@ -10,11 +10,13 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
+model Order {
+    id        String   @id @default(cuid())
+    userId    String
+    coffeeId  String
+    status    String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    @@index([name])
+    @@index([userId])
 }
