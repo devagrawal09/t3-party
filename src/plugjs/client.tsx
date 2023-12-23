@@ -39,7 +39,6 @@ export function ClientSubscription({
       console.log("socket error");
     },
   });
-  console.log("ClientSubscription", url, token);
 
   // useEffect(() => {
   //   if (!readyState) return;
