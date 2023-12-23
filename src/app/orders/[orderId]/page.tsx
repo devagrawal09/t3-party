@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { setTimeout } from "timers/promises";
 import { getOrder } from "~/app/db";
+import { Plug } from "~/plugjs/server";
 
 const DELAYS = Number(process.env.DELAYS || 0);
 
@@ -13,7 +14,7 @@ export default async function OrderPage({
 }) {
   return (
     <div className="flex flex-col gap-4">
-      {/* <Subscribe to={`orders:${orderId}`} /> */}
+      <Plug on={`orders:${orderId}`} />
       <Suspense>
         <OrderComponent orderId={orderId} />
       </Suspense>

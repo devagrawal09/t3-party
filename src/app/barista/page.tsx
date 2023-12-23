@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { setTimeout } from "timers/promises";
 import { getOrder, getOrders, setOrder } from "../db";
 import { progressOrder } from "../domain";
+import { Plug, emitTo } from "~/plugjs/server";
 
 const DELAYS = Number(process.env.DELAYS || 0);
 
@@ -10,7 +11,7 @@ export default function BaristaPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* <Plug to="orders" /> */}
+      <Plug on="orders" />
 
       <h1 className="text-xl">Hello Barista!</h1>
       <Suspense fallback={<p className="mb-4">Loading Orders...</p>}>
@@ -47,8 +48,8 @@ async function BaristaView() {
 
               await progressOrder(getOrder, setOrder)(order.id);
 
-              // emitTo("orders");
-              // emitTo(`orders:${order.id}`);
+              emitTo("orders", "");
+              emitTo(`orders:${order.id}`, "");
             }}
           >
             <button

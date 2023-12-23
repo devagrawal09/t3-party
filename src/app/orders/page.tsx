@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { setTimeout } from "timers/promises";
 import { getOrders } from "../db";
+import { Plug } from "~/plugjs/server";
 
 const DELAYS = Number(process.env.DELAYS || 0);
 
@@ -10,7 +11,7 @@ export default function OrdersPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* <Subscribe to="orders" /> */}
+      <Plug on="orders" />
 
       <h1 className="text-xl">Hello Customer!</h1>
       <Suspense fallback={<p className="mb-4">Loading Orders...</p>}>
