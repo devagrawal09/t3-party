@@ -1,10 +1,10 @@
 import { PARTYKIT_HOST, PARTYKIT_URL } from "~/env.mjs";
 import { ClientSubscription } from "./client";
 
-export async function emitTo(id: string, message: any) {
+export async function emitTo(id: string, message?: any) {
   await fetch(`${PARTYKIT_URL}/party/${id}`, {
     method: "POST",
-    body: JSON.stringify(message),
+    body: message ? JSON.stringify(message) : undefined,
     headers: {
       "Content-Type": "application/json",
     },

@@ -2,8 +2,10 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { setTimeout } from "timers/promises";
 import Link from "next/link";
-import { getCoffee } from "../db";
-import { placeOrder } from "../domain";
+import { getCoffee } from "../../db";
+import { placeOrder } from "../../(_domain)";
+import { emitTo } from "~/plugjs/server";
+import { auth, currentUser } from "@clerk/nextjs";
 
 const DELAYS = Number(process.env.DELAYS || 0);
 
@@ -27,6 +29,11 @@ export default function OrderPage({
 async function OrderForm({ coffeeId }: { coffeeId: string }) {
   await setTimeout(DELAYS);
 
+  const user = await currentUser();
+  if (!user) {
+    throw new Error("User not found");
+  }
+
   const coffee = await getCoffee(coffeeId);
 
   if (!coffee) {
@@ -40,16 +47,17 @@ async function OrderForm({ coffeeId }: { coffeeId: string }) {
         "use server";
         await setTimeout(DELAYS);
 
-        const userId = formData.get("userId")?.toString() || "anonymous";
+        const { userId } = auth();
+
         const code = Number(formData.get("code")?.toString() || 0);
 
         if (!coffee || !userId) {
-          throw new Error("Missing name or email");
+          throw new Error("Missing data");
         }
 
         const order = await placeOrder({ code, coffee, userId });
 
-        // emitTo("orders");
+        emitTo("orders", "");
 
         redirect(`/orders/${order.id}`);
       }}
@@ -58,6 +66,12 @@ async function OrderForm({ coffeeId }: { coffeeId: string }) {
         Order:{" "}
         <span className="font-semibold text-amber-800">{coffee.name}</span>
       </h1>
+      <span className="text-gray-500">
+        Contact:{" "}
+        <span className="font-semibold text-amber-800">
+          {user.emailAddresses[0]?.emailAddress || "anonymous"}
+        </span>
+      </span>
       <input
         type="number"
         name="code"

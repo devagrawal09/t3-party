@@ -1,8 +1,10 @@
 import { Suspense } from "react";
 import { setTimeout } from "timers/promises";
-import { getOrder, getOrders, setOrder } from "../db";
-import { progressOrder } from "../domain";
+import { getOrder, getOrders, setOrder } from "../../db";
+import { progressOrder } from "../../(_domain)";
 import { Plug, emitTo } from "~/plugjs/server";
+import { currentUser } from "@clerk/nextjs";
+import { emit } from "process";
 
 const DELAYS = Number(process.env.DELAYS || 0);
 
@@ -11,7 +13,7 @@ export default function BaristaPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <Plug on="orders" />
+      <Plug on="baristaOrders" />
 
       <h1 className="text-xl">Hello Barista!</h1>
       <Suspense fallback={<p className="mb-4">Loading Orders...</p>}>
@@ -23,6 +25,15 @@ export default function BaristaPage() {
 
 async function BaristaView() {
   await setTimeout(DELAYS);
+
+  const user = await currentUser();
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  if (user.publicMetadata.role !== "barista") {
+    throw new Error("User not barista");
+  }
 
   const orders = await getOrders();
 
@@ -48,8 +59,9 @@ async function BaristaView() {
 
               await progressOrder(getOrder, setOrder)(order.id);
 
-              emitTo("orders", "");
-              emitTo(`orders:${order.id}`, "");
+              emitTo("baristaOrders");
+              emitTo(`orders:${order.id}`);
+              emitTo(`customerOrders:${order.userId}`);
             }}
           >
             <button

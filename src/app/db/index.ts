@@ -1,5 +1,5 @@
 import { db } from "~/server/db";
-import type { Order, Coffee, Code } from "../domain";
+import type { Order, Coffee, Code } from "../(_domain)";
 
 const coffees: Coffee[] = [
   { id: "1", name: "latte" },
@@ -16,8 +16,10 @@ export const getOrder = async (id: string) => {
   } satisfies Order;
 };
 
-export const getOrders = async () => {
-  const orderData = await db.order.findMany();
+export const getOrders = async (params?: { userId: string }) => {
+  const orderData = await db.order.findMany({
+    where: params ? { userId: params.userId } : undefined,
+  });
   return orderData.map((order) => ({
     ...order,
     coffee: coffees.find((c) => c.id === order.coffeeId)!,
