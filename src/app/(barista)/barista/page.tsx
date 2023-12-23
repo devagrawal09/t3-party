@@ -3,8 +3,7 @@ import { setTimeout } from "timers/promises";
 import { getOrder, getOrders, setOrder } from "../../db";
 import { progressOrder } from "../../(_domain)";
 import { Plug, emitTo } from "~/plugjs/server";
-import { currentUser } from "@clerk/nextjs";
-import { emit } from "process";
+import { clerkClient, currentUser } from "@clerk/nextjs";
 
 const DELAYS = Number(process.env.DELAYS || 0);
 
@@ -47,8 +46,15 @@ async function BaristaView() {
           <h2>
             <span className="font-semibold text-amber-800">
               {order.coffee.name}
-            </span>
+            </span>{" "}
+            (
+            {order.id
+              .split("")
+              .slice(order.id.length - 3, order.id.length)
+              .join("")}
+            )
           </h2>
+          <OrderUser userId={order.userId} />
           <p>
             <span className="font-semibold">{order.status}</span>
           </p>
@@ -88,5 +94,23 @@ async function BaristaView() {
         </li>
       ))}
     </ul>
+  );
+}
+
+async function OrderUser(props: { userId: string }) {
+  const user = await clerkClient.users.getUser(props.userId);
+  if (!user) {
+    throw new Error("User not found");
+  }
+  return (
+    <>
+      {/* <p>
+        <span className="font-semibold">Name:</span> {user.firstName}
+      </p> */}
+      <p>
+        {/* <span className="font-semibold">Email:</span>{" "} */}
+        {user.emailAddresses[0]?.emailAddress}
+      </p>
+    </>
   );
 }

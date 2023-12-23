@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { setTimeout } from "timers/promises";
 import { getOrder } from "~/app/db";
 import { Plug } from "~/plugjs/server";
+import { currentUser } from "@clerk/nextjs";
 
 const DELAYS = Number(process.env.DELAYS || 0);
 
@@ -25,8 +26,11 @@ export default async function OrderPage({
 async function OrderComponent({ orderId }: { orderId: string }) {
   await setTimeout(DELAYS);
 
+  const user = await currentUser();
+  if (!user) {
+    throw new Error("User not found");
+  }
   const order = await getOrder(orderId);
-  const user = { name: "Dev Agrawal", email: "dev@clerk.dev" };
 
   if (!order) {
     redirect("/");
@@ -35,16 +39,22 @@ async function OrderComponent({ orderId }: { orderId: string }) {
   return (
     <>
       <h1 className="text-xl">
-        Order:{" "}
+        Order (
+        {order.id
+          .split("")
+          .slice(order.id.length - 3, order.id.length)
+          .join("")}
+        ):{" "}
         <span className="font-semibold text-amber-800">
           {order.coffee.name}
         </span>
       </h1>
       <p>
-        <span className="font-semibold">Name:</span> {user.name}
+        <span className="font-semibold">Name:</span> {user.firstName}
       </p>
       <p>
-        <span className="font-semibold">Email:</span> {user.email}
+        <span className="font-semibold">Email:</span>{" "}
+        {user.emailAddresses[0]?.emailAddress}
       </p>
       <p>
         <span className="font-semibold">
