@@ -1,69 +1,49 @@
-import { redirect } from "next/navigation";
-import Link from "next/link";
-import { Suspense } from "react";
-import { setTimeout } from "timers/promises";
-import { getOrder } from "~/app/db";
-import { Plug } from "~/plugjs/server";
 import { currentUser } from "@clerk/nextjs";
+import { Order, progressOrder } from "~/app/(_domain)";
+import { getOrder, setOrder } from "~/app/db";
+import OrderViewClient from "./order-view-client";
+import { Plug, emitPlug, getPlug } from "~/plugjs/server";
 
-const DELAYS = Number(process.env.DELAYS || 0);
-
-export default async function OrderPage({
-  params: { orderId },
-}: {
-  params: { orderId: string };
-}) {
-  return (
-    <div className="flex flex-col gap-4">
-      <Plug on={`orders:${orderId}`} />
-      <Suspense>
-        <OrderComponent orderId={orderId} />
-      </Suspense>
-    </div>
-  );
+export async function updateOrderView(orderId: string, order: Order) {
+  await emitPlug(`order:${orderId}`, order);
 }
 
-async function OrderComponent({ orderId }: { orderId: string }) {
-  await setTimeout(DELAYS);
-
+export default async function OrderPage({ orderId }: { orderId: string }) {
   const user = await currentUser();
   if (!user) {
     throw new Error("User not found");
   }
-  const order = await getOrder(orderId);
+
+  const order =
+    (await getPlug<Order>(`order:${orderId}`)) || (await getOrder(orderId));
 
   if (!order) {
-    redirect("/");
+    throw new Error("Order not found");
+  }
+
+  if (order.userId !== user.id) {
+    throw new Error("Order not found");
   }
 
   return (
-    <>
-      <h1 className="text-xl">
-        Order (
-        {order.id
-          .split("")
-          .slice(order.id.length - 3, order.id.length)
-          .join("")}
-        ):{" "}
-        <span className="font-semibold text-amber-800">
-          {order.coffee.name}
-        </span>
-      </h1>
-      <p>
-        <span className="font-semibold">Name:</span> {user.firstName}
-      </p>
-      <p>
-        <span className="font-semibold">Email:</span>{" "}
-        {user.emailAddresses[0]?.emailAddress}
-      </p>
-      <p>
-        <span className="font-semibold">
-          <span className="font-semibold text-amber-800">{order.status}</span>
-        </span>
-      </p>
-      <p className="mt-4">
-        <Link href="/orders">All Orders</Link>
-      </p>
-    </>
+    <Plug on={`order:${orderId}`} init={order}>
+      <div className="flex flex-col gap-4">
+        <OrderViewClient
+          user={{
+            name: user.firstName || `anon`,
+            email: user.emailAddresses[0]?.emailAddress || `anon`,
+          }}
+          cancelOrder={async (orderId: string) => {
+            "use server";
+
+            const updatedOrder = await progressOrder(
+              getOrder,
+              setOrder,
+            )(orderId);
+            updateOrderView(orderId, updatedOrder);
+          }}
+        />
+      </div>
+    </Plug>
   );
 }

@@ -7,7 +7,7 @@ import {
 } from "~/app/db";
 
 export type GetOrder = (orderId: string) => Promise<Order | undefined>;
-export type SetOrder = (order: Order) => Promise<any>;
+export type SetOrder = (order: Order) => Promise<Order>;
 
 export type Coffee = {
   id: string;
@@ -52,7 +52,7 @@ export const progressOrder =
       order.status = "pending";
     }
 
-    await setOrder(order);
+    return setOrder(order);
   };
 
 export const placeOrder = async ({

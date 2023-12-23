@@ -50,7 +50,7 @@ export const setOrder = async (order: Order) => {
   } satisfies Order;
 };
 
-export const getCoffee = (coffeeId: string) =>
+export const getCoffee = async (coffeeId: string) =>
   coffees.find((c) => c.id === coffeeId);
 
 export const getCoffees = () => coffees;

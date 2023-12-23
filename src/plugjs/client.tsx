@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import usePartySocket from "partysocket/react";
 import { PARTYKIT_HOST } from "~/env.mjs";
+import { usePlug } from "./context";
 
 export function ClientSubscription({
   url,
@@ -14,6 +15,7 @@ export function ClientSubscription({
   token: string;
 }) {
   const router = useRouter();
+  const { setData } = usePlug();
   // const [authenticated, setAuthenticated] = useState(false);
 
   const socket = usePartySocket({
@@ -26,6 +28,8 @@ export function ClientSubscription({
 
         if (message.type === "refresh") {
           router.refresh();
+        } else {
+          setData(message);
         }
       }
     },

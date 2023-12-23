@@ -21,10 +21,9 @@ model Order {
     @@index([userId])
 }
 
-model Subscription {
-    id   String  @id @default(cuid())
-    key1 String?
-    key2 String?
-    key3 String?
-    key4 String?
+model PlugConnection {
+    id String @id @default(cuid())
+    on String
+
+    @@index([on])
 }

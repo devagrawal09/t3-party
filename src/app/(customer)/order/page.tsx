@@ -4,7 +4,7 @@ import { setTimeout } from "timers/promises";
 import Link from "next/link";
 import { getCoffee } from "../../db";
 import { placeOrder } from "../../(_domain)";
-import { emitTo } from "~/plugjs/server";
+import { emitPlug } from "~/plugjs/server";
 import { auth, currentUser } from "@clerk/nextjs";
 
 const DELAYS = Number(process.env.DELAYS || 0);
@@ -57,7 +57,7 @@ async function OrderForm({ coffeeId }: { coffeeId: string }) {
 
         const order = await placeOrder({ code, coffee, userId });
 
-        emitTo("orders", "");
+        emitPlug("orders", "");
 
         redirect(`/orders/${order.id}`);
       }}

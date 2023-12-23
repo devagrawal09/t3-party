@@ -1,36 +1,32 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { setTimeout } from "timers/promises";
 import { getOrders } from "../../db";
-import { Plug } from "~/plugjs/server";
+import { Plug, emitPlug } from "~/plugjs/server";
 import { auth, currentUser } from "@clerk/nextjs";
 
-const DELAYS = Number(process.env.DELAYS || 0);
+export async function updateCustomerView(userId: string) {
+  emitPlug(`customerOrders:${userId}`);
+}
 
 export default async function CustomerOrdersPage() {
   console.log(`OrdersPage`);
-
-  const { userId } = auth().protect();
 
   const user = (await currentUser())!;
 
   return (
     <div className="flex flex-col gap-4">
-      <Plug on={`customerOrders:${userId}`} />
       <h1 className="text-xl">Hello Customer!</h1>
       <p>
         {user.firstName} ({user.emailAddresses[0]?.emailAddress})
       </p>
       <Suspense fallback={<p className="mb-4">Loading Orders...</p>}>
-        <CustomerOrdersComponent />
+        <CustomerLiveView />
       </Suspense>
     </div>
   );
 }
 
-async function CustomerOrdersComponent() {
-  await setTimeout(DELAYS);
-
+async function CustomerLiveView() {
   const { userId } = auth().protect();
 
   const orders = await getOrders({ userId });
@@ -55,7 +51,7 @@ async function CustomerOrdersComponent() {
   }
 
   return (
-    <>
+    <Plug on={`customerOrders:${userId}`} init={orders}>
       <ul>
         {orders.map((order) => (
           <Link href={`/orders/${order.id}`} key={order.id}>
@@ -92,6 +88,6 @@ async function CustomerOrdersComponent() {
       >
         Place an order
       </Link>
-    </>
+    </Plug>
   );
 }
