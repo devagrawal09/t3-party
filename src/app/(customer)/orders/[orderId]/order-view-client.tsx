@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePlug } from "~/plugjs/context";
 
 import type { Order } from "~/app/(_domain)";
+import { usePlug } from "~/plugjs/client";
 
 export default function OrderViewClient({
   user,

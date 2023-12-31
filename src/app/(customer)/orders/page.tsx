@@ -1,11 +1,13 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { getOrders } from "../../db";
-import { Plug, emitPlug } from "~/plugjs/server";
+import { createPartyPlug } from "~/plugjs/server";
 import { auth, currentUser } from "@clerk/nextjs";
 
+const { revalidatePlug, Plug } = createPartyPlug();
+
 export async function updateCustomerView(userId: string) {
-  emitPlug(`customerOrders:${userId}`);
+  revalidatePlug(`customerOrders:${userId}`);
 }
 
 export default async function CustomerOrdersPage() {

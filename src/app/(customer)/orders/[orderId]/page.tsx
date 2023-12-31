@@ -2,20 +2,26 @@ import { currentUser } from "@clerk/nextjs";
 import { Order, progressOrder } from "~/app/(_domain)";
 import { getOrder, setOrder } from "~/app/db";
 import OrderViewClient from "./order-view-client";
-import { Plug, emitPlug, getPlug } from "~/plugjs/server";
+import { createPartyPlug } from "~/plugjs/server";
+
+const { revalidatePlug, fetchPlug, Plug } = createPartyPlug();
 
 export async function updateOrderView(orderId: string, order: Order) {
-  await emitPlug(`order:${orderId}`, order);
+  await revalidatePlug(`order:${orderId}`, order);
 }
 
-export default async function OrderPage({ orderId }: { orderId: string }) {
+export default async function OrderPage({
+  params: { orderId },
+}: {
+  params: { orderId: string };
+}) {
   const user = await currentUser();
   if (!user) {
     throw new Error("User not found");
   }
 
   const order =
-    (await getPlug<Order>(`order:${orderId}`)) || (await getOrder(orderId));
+    (await fetchPlug<Order>(`order:${orderId}`)) || (await getOrder(orderId));
 
   if (!order) {
     throw new Error("Order not found");

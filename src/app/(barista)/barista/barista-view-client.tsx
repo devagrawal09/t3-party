@@ -1,7 +1,7 @@
 "use client";
 
 import type { Order } from "~/app/(_domain)";
-import { usePlug } from "~/plugjs/context";
+import { usePlug } from "~/plugjs/client";
 
 export default function BaristaView({
   orders: serverOrders,

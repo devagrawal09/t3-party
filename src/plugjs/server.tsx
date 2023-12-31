@@ -1,45 +1,51 @@
 import { PARTYKIT_HOST, PARTYKIT_URL } from "~/env.mjs";
-import { ClientSubscription } from "./client";
-import { PlugProvider } from "./context";
+import { ClientSubscription, PlugMessage } from "./client";
 
-export async function emitPlug(id: string, message?: any) {
-  await fetch(`${PARTYKIT_URL}/party/${id}`, {
-    method: "POST",
-    body: JSON.stringify(message ? message : { type: "refresh" }),
-    headers: {
-      "Content-Type": "application/json",
-    },
-    next: {
-      revalidate: 0,
-    },
-  });
-}
+export function createPartyPlug() {
+  async function revalidatePlug<D = any>(id: string, message?: D) {
+    const payload: PlugMessage<D> = message
+      ? { type: "data", data: message }
+      : { type: "empty" };
 
-export async function getPlug<D = any>(id: string) {
-  const res = await fetch(`${PARTYKIT_URL}/party/${id}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (res.status === 200) {
-    return (await res.json()) as D;
+    await fetch(`${PARTYKIT_URL}/party/${id}`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      next: {
+        revalidate: 0,
+      },
+    });
   }
-}
 
-export function Plug(props: {
-  on: string;
-  children?: React.ReactNode;
-  init?: any;
-  onConnect?: () => void;
-}) {
-  const token = `${props.on}`;
-  return (
-    <PlugProvider init={props.init}>
-      <ClientSubscription url={PARTYKIT_HOST} token={token}>
+  async function fetchPlug<D = any>(id: string) {
+    const res = await fetch(`${PARTYKIT_URL}/party/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (res.status === 200) {
+      return (await res.json()) as D;
+    }
+  }
+
+  function Plug(props: {
+    on: string;
+    children?: React.ReactNode;
+    init?: any;
+    onConnect?: () => void;
+  }) {
+    const token = `${props.on}`;
+
+    return (
+      <ClientSubscription url={PARTYKIT_HOST} token={token} init={props.init}>
         {props.children}
       </ClientSubscription>
-    </PlugProvider>
-  );
+    );
+  }
+
+  return { revalidatePlug, fetchPlug, Plug };
 }

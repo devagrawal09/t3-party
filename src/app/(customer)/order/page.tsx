@@ -2,10 +2,13 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { setTimeout } from "timers/promises";
 import Link from "next/link";
-import { getCoffee } from "../../db";
+import { getCoffee, getCoffees } from "../../db";
 import { placeOrder } from "../../(_domain)";
-import { emitPlug } from "~/plugjs/server";
 import { auth, currentUser } from "@clerk/nextjs";
+import { createPartyPlug } from "~/plugjs/server";
+import { BackButton } from "./back";
+
+const { revalidatePlug } = createPartyPlug();
 
 const DELAYS = Number(process.env.DELAYS || 0);
 
@@ -19,19 +22,21 @@ export default function OrderPage({
       <Suspense fallback={<p className="mb-4">Loading Order Form...</p>}>
         <OrderForm coffeeId={searchParams.coffee} />
       </Suspense>
-      <Link href="/" className="mt-4 bg-red-400 p-2">
-        Back
-      </Link>
+      <BackButton className="bg-red-400 p-2">Back</BackButton>
     </>
   );
 }
 
-async function OrderForm({ coffeeId }: { coffeeId: string }) {
+async function OrderForm({ coffeeId }: { coffeeId?: string }) {
   await setTimeout(DELAYS);
 
   const user = await currentUser();
   if (!user) {
     throw new Error("User not found");
+  }
+
+  if (!coffeeId) {
+    return <Catalog />;
   }
 
   const coffee = await getCoffee(coffeeId);
@@ -57,7 +62,7 @@ async function OrderForm({ coffeeId }: { coffeeId: string }) {
 
         const order = await placeOrder({ code, coffee, userId });
 
-        emitPlug("orders", "");
+        revalidatePlug("orders", "");
 
         redirect(`/orders/${order.id}`);
       }}
@@ -83,5 +88,27 @@ async function OrderForm({ coffeeId }: { coffeeId: string }) {
         Order
       </button>
     </form>
+  );
+}
+
+async function Catalog() {
+  await setTimeout(DELAYS);
+
+  const coffees = await getCoffees();
+
+  return (
+    <ul className="mb-4">
+      {coffees.map((coffee) => (
+        <li
+          className="my-2 flex justify-between gap-4 border p-3"
+          key={coffee.id}
+        >
+          <h2>{coffee.name}</h2>
+          <Link href={`/order?coffee=${coffee.id}`} className="bg-blue-300 p-2">
+            Order
+          </Link>
+        </li>
+      ))}
+    </ul>
   );
 }
