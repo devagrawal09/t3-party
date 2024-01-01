@@ -37,11 +37,17 @@ export function createPartyPlug() {
     children?: React.ReactNode;
     init?: any;
     onConnect?: () => void;
+    revalidatePage?: boolean;
   }) {
     const token = `${props.on}`;
 
     return (
-      <ClientSubscription url={PARTYKIT_HOST} token={token} init={props.init}>
+      <ClientSubscription
+        url={PARTYKIT_HOST}
+        token={token}
+        init={props.init}
+        revalidatePage={props.revalidatePage}
+      >
         {props.children}
       </ClientSubscription>
     );

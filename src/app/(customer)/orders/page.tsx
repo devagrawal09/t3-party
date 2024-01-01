@@ -53,7 +53,7 @@ async function CustomerLiveView() {
   }
 
   return (
-    <Plug on={`customerOrders:${userId}`} init={orders}>
+    <Plug on={`customerOrders:${userId}`} revalidatePage>
       <ul>
         {orders.map((order) => (
           <Link href={`/orders/${order.id}`} key={order.id}>
