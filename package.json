@@ -8,7 +8,6 @@
     "db:studio": "prisma studio",
     "dev": "next dev",
     "postinstall": "prisma generate",
-    "lint": "next lint",
     "start": "next start"
   },
   "dependencies": {
