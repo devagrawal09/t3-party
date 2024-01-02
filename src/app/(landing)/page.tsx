@@ -3,7 +3,15 @@
  * @see https://v0.dev/t/WNMhBPg6FmU
  */
 import Link from "next/link";
+import Image from "next/image";
 import { CodeSample1, CodeSample2 } from "./sample";
+import ablyLogo from "./vendors/ably.png";
+import amptLogo from "./vendors/ampt.svg";
+import awsLogo from "./vendors/aws.png";
+import convexLogo from "./vendors/convex.svg";
+import firebaseLogo from "./vendors/firebase.svg";
+import partykitLogo from "./vendors/partykit.svg";
+import supabaseLogo from "./vendors/supabase.png";
 
 export default function LandingPage() {
   return (
@@ -61,7 +69,8 @@ export default function LandingPage() {
                 <div className="grid gap-1">
                   <h3 className="text-lg font-bold">Revalidate Plug</h3>
                   <p className="text-sm text-gray-500">
-                    anywhere in a Server Action with the plug's identifier
+                    anywhere in a Server Action with the plug's unique
+                    identifier
                   </p>
                   <CodeSample2 />
                 </div>
@@ -70,30 +79,21 @@ export default function LandingPage() {
                   <p className="text-sm text-gray-500">
                     with one of the many available adapters
                   </p>
+                  <div className="mt-4 flex flex-wrap gap-4">
+                    <Image src={partykitLogo} alt="partykit" height={25} />
+                    <Image src={ablyLogo} alt="ably" height={32} />
+                    <Image src={awsLogo} alt="aws" height={32} />
+                    <Image src={convexLogo} alt="convex" height={32} />
+                    <Image src={firebaseLogo} alt="firebase" height={32} />
+                    <Image src={supabaseLogo} alt="supabase" height={32} />
+                    <Image src={amptLogo} alt="ampt" height={32} />
+                    ...and more
+                  </div>
                 </div>
               </div>
             </div>
           </section>
         </section>
-        <footer className="flex w-full shrink-0 flex-col items-center gap-2 border-t px-4 py-6 sm:flex-row md:px-6">
-          <p className="text-xs text-gray-500">
-            © JS Real-Time Library. All rights reserved.
-          </p>
-          <nav className="flex gap-4 sm:ml-auto sm:gap-6">
-            <Link
-              className="text-xs underline-offset-4 hover:underline"
-              href="#"
-            >
-              Terms of Service
-            </Link>
-            <Link
-              className="text-xs underline-offset-4 hover:underline"
-              href="#"
-            >
-              Privacy
-            </Link>
-          </nav>
-        </footer>
       </main>
     </div>
   );
