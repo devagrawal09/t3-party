@@ -10,7 +10,6 @@ import {
 import { Inter } from "next/font/google";
 import { headers } from "next/headers";
 import Link from "next/link";
-import { TRPCReactProvider } from "~/trpc/react";
 
 export const metadata = {
   title: "Next.js",
@@ -32,25 +31,23 @@ export default function RootLayout({
       <MultisessionAppSupport>
         <html lang="en">
           <body className={`font-sans ${inter.variable}`}>
-            <TRPCReactProvider headers={headers()}>
-              <header className="flex p-4">
-                <div className="grow"></div>
-                <UserButton />
-                <SignedOut>
-                  <SignInButton>
-                    <button className="rounded bg-blue-400 px-4 py-2 text-center font-bold text-white hover:bg-blue-700">
-                      Sign In
-                    </button>
-                  </SignInButton>
-                </SignedOut>
-              </header>
-              <main className="flex flex-col items-center p-16 pt-4">
-                <Link href="/">
-                  <h1 className="mb-8 text-3xl">Serverlesspresso</h1>
-                </Link>
-                <div className="m-4">{children}</div>
-              </main>
-            </TRPCReactProvider>
+            <header className="flex p-4">
+              <div className="grow"></div>
+              <UserButton />
+              <SignedOut>
+                <SignInButton>
+                  <button className="rounded bg-blue-400 px-4 py-2 text-center font-bold text-white hover:bg-blue-700">
+                    Sign In
+                  </button>
+                </SignInButton>
+              </SignedOut>
+            </header>
+            <main className="flex flex-col items-center p-16 pt-4">
+              <Link href="/">
+                <h1 className="mb-8 text-3xl">Serverlesspresso</h1>
+              </Link>
+              <div className="m-4">{children}</div>
+            </main>
           </body>
         </html>
       </MultisessionAppSupport>
