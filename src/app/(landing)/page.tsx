@@ -3,7 +3,7 @@
  * @see https://v0.dev/t/WNMhBPg6FmU
  */
 import Link from "next/link";
-import { CodeSample } from "./sample";
+import { CodeSample1, CodeSample2 } from "./sample";
 
 export default function LandingPage() {
   return (
@@ -11,28 +11,7 @@ export default function LandingPage() {
       <header className="flex h-14 items-center px-4 lg:px-6">
         <Link className="flex items-center justify-center" href="#">
           <CloudLightningIcon className="h-6 w-6" />
-          <span className="sr-only">JS Real-Time Library</span>
         </Link>
-        <nav className="ml-auto flex gap-4 sm:gap-6">
-          <Link
-            className="text-sm font-medium underline-offset-4 hover:underline"
-            href="#"
-          >
-            Features
-          </Link>
-          <Link
-            className="text-sm font-medium underline-offset-4 hover:underline"
-            href="#"
-          >
-            Pricing
-          </Link>
-          <Link
-            className="text-sm font-medium underline-offset-4 hover:underline"
-            href="#"
-          >
-            About
-          </Link>
-        </nav>
       </header>
       <main className="flex-1">
         <section className="w-full border-y pt-12 md:pt-24 lg:pt-32">
@@ -43,7 +22,7 @@ export default function LandingPage() {
                   &lt;Plug&gt;
                 </h1>
                 <h2 className="mt-2 text-xl font-medium tracking-tighter sm:text-2xl md:text-3xl xl:text-[2.25rem] 2xl:text-[2.5rem]">
-                  The first Real-time Server Component
+                  The first Realtime Server Component
                 </h2>
               </div>
               <div className="flex flex-col items-start space-y-4">
@@ -56,7 +35,7 @@ export default function LandingPage() {
                     className="inline-flex h-9 items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-gray-50 shadow transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50"
                     href="#"
                   >
-                    Get Started
+                    Coming Soon
                   </Link>
                 </div>
               </div>
@@ -66,9 +45,6 @@ export default function LandingPage() {
             <div className="space-y-12 px-4 md:px-6">
               <div className="flex flex-col items-center justify-center space-y-4 text-center">
                 <div className="space-y-2">
-                  {/* <div className="inline-block rounded-lg bg-gray-100 px-3 py-1 text-sm">
-                    Key Features
-                  </div> */}
                   <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
                     Three steps to realtime
                   </h2>
@@ -76,22 +52,23 @@ export default function LandingPage() {
               </div>
               <div className="mx-auto grid items-start gap-8 px-4 sm:grid-cols-2 md:gap-12 lg:grid-cols-3">
                 <div className="grid gap-1">
-                  <h3 className="text-lg font-bold">Real-time updates</h3>
+                  <h3 className="text-lg font-bold">Create a Plug</h3>
                   <p className="text-sm text-gray-500">
-                    Keep your users informed with live updates.
+                    anywhere in a Server Component with a unique identifier
                   </p>
-                  <CodeSample />
+                  <CodeSample1 />
                 </div>
                 <div className="grid gap-1">
-                  <h3 className="text-lg font-bold">Easy integration</h3>
+                  <h3 className="text-lg font-bold">Revalidate Plug</h3>
                   <p className="text-sm text-gray-500">
-                    Integrate seamlessly with Next.js and Solid Start.
+                    anywhere in a Server Action with the plug's identifier
                   </p>
+                  <CodeSample2 />
                 </div>
                 <div className="grid gap-1">
-                  <h3 className="text-lg font-bold">High performance</h3>
+                  <h3 className="text-lg font-bold">Configure Plug</h3>
                   <p className="text-sm text-gray-500">
-                    Designed to handle high traffic without slowing down.
+                    with one of the many available adapters
                   </p>
                 </div>
               </div>
