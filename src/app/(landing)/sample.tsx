@@ -31,6 +31,7 @@ export function CodeSample2() {
   );
 }
 
-const sample1 = `<Plug on="dashboard" />`;
+const sample1 = `<Plug on="dashboard">
+</Plug>`;
 const sample2 = `"use server"
 revalidatePlug("dashboard")`;
